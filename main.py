@@ -3,6 +3,7 @@ import os
 import time
 import requests
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 
@@ -25,11 +26,12 @@ URL = "https://expo2025shop.jp/item_list.html?siborikomi_clear=1&keyword=%E9%87%
 def check_stock():
     # Headlessブラウザ設定（GitHub Actionsやクラウド環境向け）
     chrome_options = Options()
+    chrome_options.binary_location = "/usr/bin/chromium-browser"  # ← ここがポイント！
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
 
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(service=Service(), options=chrome_options)
     driver.get(URL)
     time.sleep(3)
     soup = BeautifulSoup(driver.page_source, "html.parser")
