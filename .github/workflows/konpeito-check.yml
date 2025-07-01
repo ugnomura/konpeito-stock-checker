@@ -2,16 +2,18 @@ name: Konpeito Stock Checker
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # JST 9:00（UTC 0:00）
-    - cron: '0 6 * * *'   # JST 15:00（UTC 6:00）
-    - cron: '0 12 * * *'  # JST 21:00（UTC 12:00）
-  workflow_dispatch:      # 手動実行も可能にする
+    - cron: '0 0 * * *'
+    - cron: '0 6 * * *'
+    - cron: '0 12 * * *'
+  workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -21,18 +23,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Install Chrome
+      - name: Install Chrome and chromedriver
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
-      - name: Install chromedriver
-        run: |
-          sudo apt-get install -y chromium-chromedriver
-          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+          sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
 
       - name: Run script
         env:
-          ACCESS_TOKEN: ${{ secrets.LINE_ACCESS_TOKEN }}
-          USER_ID: ${{ secrets.LINE_USER_ID }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: python main.py
