@@ -24,27 +24,35 @@ logging.basicConfig(
 URL = "https://expo2025shop.jp/item_list.html?siborikomi_clear=1&keyword=%E9%87%91%E5%B9%B3%E7%B3%96"
 
 def check_stock():
-    # Headlessブラウザ設定（GitHub Actionsやクラウド環境向け）
     chrome_options = Options()
-    chrome_options.binary_location = "/usr/bin/chromium-browser"  # ← ここがポイント！
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
 
-    driver = webdriver.Chrome(service=Service(), options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(URL)
     time.sleep(3)
     soup = BeautifulSoup(driver.page_source, "html.parser")
     driver.quit()
 
-    sold_out_items = soup.find_all(string="SOLD OUT")
+    items = soup.select(".item_list_box")  # 商品ブロックのセレクタ（要調整）
+    available_items = []
 
-    if not sold_out_items:
-        message = "🎉 金平糖が再入荷しました！\n👉 https://expo2025shop.jp/"
+    for item in items:
+        sold_out_tag = item.find(string="SOLD OUT")
+        if not sold_out_tag:
+            title_tag = item.select_one(".item_name")  # 商品名のセレクタ（要調整）
+            title = title_tag.text.strip() if title_tag else "商品名不明"
+            available_items.append(title)
+
+    if available_items:
+        message = "🎉 金平糖の在庫あり！\n" + "\n".join(f"・{name}" for name in available_items)
+        message += "\n👉 https://expo2025shop.jp/"
         logging.info(message)
         send_line_notify(message)
     else:
-        logging.info("まだ売り切れです")
+        logging.info("すべて売り切れです")
 
 def send_line_notify(message):
     url = "https://notify-api.line.me/api/notify"
