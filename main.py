@@ -60,14 +60,14 @@ def check_stock():
     else:
         logging.info("すべて売り切れです")
 
-def send_line_message(message):
+def send_line_message(message, access_token = ACCESS_TOKEN, user_id = USER_ID):
     url = "https://api.line.me/v2/bot/message/push"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {ACCESS_TOKEN}"
+        "Authorization": f"Bearer {access_token}"
     }
     body = {
-        "to": USER_ID,
+        "to": user_id,
         "messages": [
             {
                 "type": "text",
@@ -84,3 +84,4 @@ def send_line_message(message):
 
 if __name__ == "__main__":
     check_stock()
+    
