@@ -75,6 +75,7 @@ def send_line_message(message, access_token = ACCESS_TOKEN, user_id = USER_ID):
             }
         ]
     }
+    logging.info(f"{headers=}, {body=}")
     response = requests.post(url, headers=headers, json=body)
     if response.status_code != 200:
         logging.warning(f"LINE送信失敗: {response.status_code} - {response.text}")
