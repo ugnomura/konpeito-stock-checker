@@ -56,21 +56,26 @@ def check_stock():
         message = "🎉 金平糖の在庫あり！\n" + "\n".join(f"・{name}" for name in available_items)
         message += "\n👉 https://expo2025shop.jp/"
         logging.info(message)
-        send_line_notify(message)
+        send_line_message(message)
     else:
         logging.info("すべて売り切れです")
 
-def send_line_notify(message):
-    url = "https://notify-api.line.me/api/notify"
+def send_line_message(message):
+    url = "https://api.line.me/v2/bot/message/push"
     headers = {
+        "Content-Type": "application/json",
         "Authorization": f"Bearer {ACCESS_TOKEN}"
     }
-    data = {
-        "message": message
+    body = {
+        "to": USER_ID,
+        "messages": [
+            {
+                "type": "text",
+                "text": message
+            }
+        ]
     }
-    response = requests.post(url, headers=headers, data=data)
-    if response.status_code != 200:
-        logging.warning(f"LINE通知に失敗しました: {response.status_code} - {response.text}")
+    response = requests.post(url, headers=headers, json=body)
 
 if __name__ == "__main__":
     check_stock()
