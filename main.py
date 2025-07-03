@@ -40,8 +40,7 @@ def check_stock():
     available_items = []
 
     for item in items:
-        sold_out_tag = item.find(string="SOLD OUT")
-        if not sold_out_tag:
+        if "SOLD OUT" not in item.text:
             title_tag = item.select_one(".item_name")  # 商品名のセレクタ（要調整）
             title = title_tag.text.strip() if title_tag else "商品名不明"
             available_items.append(title)
