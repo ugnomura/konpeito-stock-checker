@@ -76,6 +76,11 @@ def send_line_message(message):
         ]
     }
     response = requests.post(url, headers=headers, json=body)
+    if response.status_code != 200:
+        logging.warning(f"LINE送信失敗: {response.status_code} - {response.text}")
+    else:
+        logging.info("LINE送信成功")
+
 
 if __name__ == "__main__":
     check_stock()
