@@ -33,5 +33,5 @@ jobs:
       - name: Run script
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          USER_ID: ${{ secrets.USER_ID1 }}
+          USER_ID1: ${{ secrets.USER_ID1 }}
         run: python main.py
