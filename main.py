@@ -36,13 +36,20 @@ def check_stock():
     soup = BeautifulSoup(driver.page_source, "html.parser")
     driver.quit()
 
-    items = soup.select(".item_list_box")  # 商品ブロックのセレクタ（要調整）
     available_items = []
+    boxes = soup.select("div.box")
 
-    for item in items:
-        if "SOLD OUT" not in item.text:
-            title_tag = item.select_one(".item_name")  # 商品名のセレクタ（要調整）
-            title = title_tag.text.strip() if title_tag else "商品名不明"
+    for box in boxes:
+        # SOLD OUTのバッジがあるか判定
+        soldout_badge = box.select_one("b.eds-badge:contains('SOLD OUT')")
+        
+        # 上記はcontains疑似セレクタ風ですが、BeautifulSoupで互換性ないため以下を使います
+        badges = box.select("b.eds-badge")
+        has_soldout = any(badge.get_text(strip=True) == "SOLD OUT" for badge in badges)
+
+        if not has_soldout:
+            title_tag = box.select_one("h3 a")
+            title = title_tag.get_text(strip=True) if title_tag else "商品名不明"
             available_items.append(title)
 
     if available_items:
